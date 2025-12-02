@@ -1,0 +1,180 @@
+---
+
+targets:
+  leaf01:
+    username: admin
+    password: NokiaSrl1!
+    skip-verify: true
+    subscription:
+      - interfaces
+      - cpu
+      - memory
+      - applications
+      - ipv4_routes
+      - bgp_peers
+      - troughput
+      - bgp_active_routes
+      - net_instance_op_state
+      - dc_throughput
+  leaf02:
+    username: admin
+    password: NokiaSrl1!
+    skip-verify: true
+    subscription:
+      - interfaces
+      - cpu
+      - memory
+      - applications
+      - ipv4_routes
+      - bgp_peers
+      - troughput
+      - bgp_active_routes
+      - net_instance_op_state
+      - dc_throughput
+  leaf03:
+    username: admin
+    password: NokiaSrl1!
+    skip-verify: true
+    subscription:
+      - interfaces
+      - cpu
+      - memory
+      - applications
+      - ipv4_routes
+      - bgp_peers
+      - troughput
+      - bgp_active_routes
+      - net_instance_op_state
+      - dc_throughput
+  spine01:
+    username: admin
+    password: NokiaSrl1!
+    skip-verify: true
+    subscription:
+      - interfaces
+      - cpu
+      - memory
+      - applications
+      - ipv4_routes
+      - bgp_peers
+      - troughput
+      - bgp_active_routes
+      - net_instance_op_state
+      - dc_throughput
+  spine02:
+    username: admin
+    password: NokiaSrl1!
+    skip-verify: true
+    subscription:
+      - interfaces
+      - cpu
+      - memory
+      - applications
+      - ipv4_routes
+      - bgp_peers
+      - troughput
+      - bgp_active_routes
+      - net_instance_op_state
+      - dc_throughput
+subscriptions:
+  interfaces:
+    paths:
+      - "/interface[name=*]/oper-state"
+    stream-mode: sample
+    sample-interval: 5s
+    mode: stream
+  cpu:
+    paths:
+      - "/platform/control[slot=*]/cpu[index=*]/total"
+    stream-mode: sample
+    sample-inverval: 5s
+    mode: stream
+  memory:
+    paths:
+      - "/platform/control[slot=*]/memory/utilization"
+    stream-mode: sample
+    sample-interval: 5s
+    mode: stream
+  applications:
+    paths:
+      - "/system/app-management/application[name=*]/pid"
+    stream-mode: sample
+    sample-interval: 5s
+    mode: stream
+  ipv4_routes:
+    paths:
+     - "/network-instance[name=*]/route-table"
+    stream-mode: sample
+    sample-interval: 5s
+    mode: stream
+  bgp_peers:
+    paths:
+      - "/network-instance[name=*]/protocols/bgp/statistics/total-peers"
+      - "/network-instance[name=*]/protocols/bgp/statistics/up-peers"
+    stream-mode: sample
+    sample-interval: 5s
+    mode: stream
+  throughput:
+    paths:
+      - "/interface[name=*]/statistics"
+    stream-mode: sample
+    sample-interval: 5s
+    mode: stream
+  bgp_active_routes:
+    paths:
+      - "/network-instance[name=*]/protocols/bgp/statistics/total-active-routes"
+    stream-mode: sample
+    sample-interval: 5s
+    mode: stream
+  net_instance_op_state:
+    paths:
+      - "/network-instance[name=*]/oper-state"
+    stream-mode: sample
+    sample-interval: 5s
+    mode: stream
+  dc_throughput:
+    paths:
+      - "/interface[name=*]/traffic-rate/in-bps"
+      - "/interface[name=*]/traffic-rate/out-bps"
+    stream-mode: sample
+    sample-interval: 5s
+    mode: stream
+processors:
+  rename-up-down:
+    event-strings:
+      value-names:
+        - ".*"
+      transforms:
+        - replace:
+            apply-on: "value"
+            old: "up"
+            new: "1"
+        - replace:
+            apply-on: "value"
+            old: "down"
+            new: "0"
+  interface-names:
+    event-strings:
+      tag-names:
+        - "^interface_name"
+      transforms:
+        - replace:
+            apply-on: "value"
+            old: "ethernet-"
+            new: "e"
+        - replace:
+            apply-on: "value"
+            old: "/"
+            new: "-"
+outputs:
+  output1:
+    type: prometheus_write
+    url: http://prometheus:9090/api/v1/write
+    event-processors:
+      - rename-up-down
+      - interface-names
+    num-workers: 1
+    num-writers: 1
+    metadata:
+      include: true
+    interval: 5s
