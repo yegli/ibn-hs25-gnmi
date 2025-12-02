@@ -29,13 +29,28 @@ docker ps
 Once verified let us proceed with the gNMI Request Model and Data Handling section. 
 
 ## Request Model and Data Handling
+In this lab we work with gNMIc implementation of the gNMI protocol. Most if not all commands used in this lab are also interchangeable with the gNMI_CLI cli tool written in go. Further information on the installation can be found here: https://github.com/openconfig/gnmi
 
 ### gNMI Encoding
+The encoding for gNMI is outlined in the RFC-7951 on JSON Encoding of Data Modeled with YANG. (https://datatracker.ietf.org/doc/html/rfc7951)
 
-### Get Request
+### GetRequest
+To retrieve data from a device using the GetRequest method we work with the paths specified by the YANG Model. In the provided example we retrieve the oper-state which can be of value `0`or `1` for all interfaces as shown by the path `"/interface[name=*]/oper-state"` Also as we have learnt in the previous section the econding can be of a multitude of types not only limited to json but also to protobuf etc.
+```sh
+gnmic get --skip-verify --username admin --password NokiaSrl1! 3 --address leaf01 --path "/interface[name=*]/oper-state" 4 --encoding json_ietf
+```
+### SetRequest
+```sh
+```
 
 ### Namespaces
+```sh
+```
 
 ### Wildcard
+```sh
+```
 
 ### Error Messages​
+```sh
+```
