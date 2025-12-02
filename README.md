@@ -1,6 +1,6 @@
 # IBN gNMI Project
 
-## How to get started with this LAB
+## Getting Started
 To run this lab a few prerequisits must be met by the host.
 
 ### Prerequisits
