@@ -27,28 +27,28 @@ docker ps
 # b3c05a391694   ghcr.io/nokia/srlinux:24.10.3               "/tini -- fixuid -q …"   25 hours ago   Up 25 hours                                                  leaf03
 # 763bc18b225e   ghcr.io/nokia/srlinux:24.10.3               "/tini -- fixuid -q …"   25 hours ago   Up 25 hours                                                  leaf01
 ```
-Once verified proceed with applying the configuration stored in `gnmi-config.yaml` by running `gnmic --config ./gNMI.yaml subscribe` on the host. You can verify this by going the hosts IP `ip -c a` and going to port 3000. You should be able to open a Grafan Dashboard that now should be ingesting information properly.
+Once verified proceed with applying the configuration stored in `gnmi-config.yaml` by running `gnmic --config ./gnmi-config.yaml subscribe` on the host. You can verify this by going the hosts IP `ip -c a` and going to port 3000. You should be able to open a Grafan Dashboard that now should be ingesting information properly.
 
-## Request Model and Data Handling
+## Request Model and Remote Procedure Calls
 In this lab we work with gNMIc implementation of the gNMI protocol. Most if not all commands used in this lab are also interchangeable with the gNMI_CLI cli tool written in go. Further information on the installation can be found here: https://github.com/openconfig/gnmi
 
 ### gNMI Encoding
-The encoding for gNMI is outlined in the RFC-7951 on JSON Encoding of Data Modeled with YANG. (https://datatracker.ietf.org/doc/html/rfc7951)
+The encoding for gNMI is outlined in the RFC-7951 on JSON Encoding of Data Modeled with YANG. (https://datatracker.ietf.org/doc/html/rfc7951). This RFC defines the Tree and Leaf structure used to model data in json format and how to map this json format to the paths used in the YANG model.
 
-### GetRequest
-To retrieve data from a device using the GetRequest method we work with the paths specified by the YANG Model. In the provided example we retrieve the oper-state which can be of value `0`or `1` for all interfaces as shown by the path `"/interface[name=*]/oper-state"` Also as we have learnt in the previous section the econding can be of a multitude of types not only limited to json but also to protobuf etc.
+### Get RPC
+To retrieve data from a device using the GetRequest method we work with the paths specified by the YANG Model. In the provided example we retrieve the oper-state which can be of value `0`or `1` for all interfaces as shown by the path `"/interface[name=*]/oper-state"` Also as we have learnt in the previous section the econding can be of a multitude of types not only limited to json but also to protobuf etc. The GetRequest using the GET RPC will return a GetResponse. (https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto#L57)
 ```sh
 gnmic get --skip-verify --username admin --password NokiaSrl1! 3 --address leaf01 --path "/interface[name=*]/oper-state" 4 --encoding json_ietf
 ```
-### SetRequest
+### Set RPC
 ```sh
 ```
 
-### Namespaces
+### Capabilities RPC
 ```sh
 ```
 
-### Wildcard
+### Subscribe RPC
 ```sh
 ```
 
