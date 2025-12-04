@@ -30,17 +30,53 @@ docker ps
 Once verified proceed with applying the configuration stored in `gnmi-config.yaml` by running `gnmic --config ./gnmi-config.yaml subscribe` on the host. You can verify this by going the hosts IP `ip -c a` and going to port 3000. You should be able to open a Grafan Dashboard that now should be ingesting information properly.
 
 ## Request Model and Remote Procedure Calls
-In this lab we work with gNMIc implementation of the gNMI protocol. Most if not all commands used in this lab are also interchangeable with the gNMI_CLI cli tool written in go. Further information on the installation can be found here: https://github.com/openconfig/gnmi
+In this lab we work with gNMIc implementation of the gNMI protocol. Most if not all commands used in this lab are also interchangeable with the gNMI_CLI cli tool written in go. Further information on the installation can be found here: [docs](https://github.com/openconfig/gnmi)
 
 ### gNMI Encoding
-The encoding for gNMI is outlined in the RFC-7951 on JSON Encoding of Data Modeled with YANG. (https://datatracker.ietf.org/doc/html/rfc7951). This RFC defines the Tree and Leaf structure used to model data in json format and how to map this json format to the paths used in the YANG model.
+The encoding for gNMI is outlined in the RFC-7951 on JSON Encoding of Data Modeled with YANG. [RFC-7951](https://datatracker.ietf.org/doc/html/rfc7951). This RFC defines the Tree and Leaf structure used to model data in json format and how to map this json format to the paths used in the YANG model.
 
 ### Get RPC
-To retrieve data from a device using the GetRequest method we work with the paths specified by the YANG Model. In the provided example we retrieve the oper-state which can be of value `0`or `1` for all interfaces as shown by the path `"/interface[name=*]/oper-state"` Also as we have learnt in the previous section the econding can be of a multitude of types not only limited to json but also to protobuf etc. The GetRequest using the GET RPC will return a GetResponse. (https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto#L57)
+To retrieve data from a device using the GetRequest method we work with the paths specified by the YANG Model. In the provided example we retrieve the oper-state which can be of value `0`or `1` for all interfaces as shown by the path `"/interface[name=*]/oper-state"` Also as we have learnt in the previous section the econding can be of a multitude of types not only limited to json but also to protobuf etc. The GetRequest using the GET RPC will return a GetResponse: [docs](https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto#L57)
 
 ```sh
 gnmic get --skip-verify --username admin --password NokiaSrl1! 3 --address leaf01 \
 --path "/interface[name=*]/oper-state" 4 --encoding json_ietf
+```
+```json
+[
+  {
+    "source": "leaf01",
+    "timestamp": 1764837615497329589,
+    "time": "2025-12-04T08:40:15.497329589Z",
+    "updates": [
+      {
+        "Path": "",
+        "values": {
+          "": {
+            "srl_nokia-interfaces:interface": [
+              {
+                "name": "ethernet-1/1",
+                "oper-state": "up"
+              },
+              {
+                "name": "ethernet-1/2",
+                "oper-state": "down"
+              },
+              {
+                "name": "ethernet-1/3",
+                "oper-state": "down"
+              },
+              {
+                "name": "system0",
+                "oper-state": "up"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]
 ```
 
 ### Set RPC
@@ -49,21 +85,62 @@ To __set / override / remove__ a value for an attribute such as the description 
 As an example a set __--update__ request makes use of the YANG model to define which interface in this case __e1-1__ should have its __description__ overwritten with the newly provided value "Interface to Server01".
 ```sh
 gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
-set --update /interfaces/interface[name=e1-1]/config/description:::string:::Interface to Server01
+set --update /interface[name=ethernet-1/1]/description:::string:::Interface to Server01
+```
+```sh
+{
+  "source": "leaf01",
+  "timestamp": 1764837350546967716,
+  "time": "2025-12-04T08:35:50.546967716Z",
+  "results": [
+    {
+      "operation": "UPDATE",
+      "path": "interface[name=ethernet-1/1]/description"
+    }
+  ]
+}
 ```
 Alternatively the __--replace__ request overwrites the entire subtree at the specified path. Once everything under said path is removed the new __description__ for interface __e1-1__ is inserted.
 ```sh
-gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
-set --replace /interfaces/interface[name=e1-1]/config/description:::string:::Interface to Server01
+gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 set \
+--replace /interface[name=ethernet-1/1]/description:::string:::Interface to Server01
+```
+```sh
+{
+  "source": "leaf01",
+  "timestamp": 1764837288329288930,
+  "time": "2025-12-04T08:34:48.32928893Z",
+  "results": [
+    {
+      "operation": "REPLACE",
+      "path": "interface[name=ethernet-1/1]/description"
+    }
+  ]
+}
 ```
 
 And lastly the __--delete__ request allowing the removal of the entire subtree specfied by the provided path. As shown in this example the __description__ for interface __e1-1__ is completely removed.
 ```sh
 gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
-set --delete /interfaces/interface[name=e1-1]/config/description
+set --delete /interface[name=ethernet-1/1]/description
 ```
+```sh
+{
+  "source": "leaf01",
+  "timestamp": 1764837384234692050,
+  "time": "2025-12-04T08:36:24.23469205Z",
+  "results": [
+    {
+      "operation": "DELETE",
+      "path": "interface[name=ethernet-1/1]/description"
+    }
+  ]
+}
+```
+> Note that any leaf with a value of `config false;` in the YANG model doesn't allow any Set Operations. This includes things such as interface counters, oper state or MAC learned entries. Also certain values such as list keys are only writable once as outlined in [RFC-7950](https://datatracker.ietf.org/doc/html/rfc7950).
 
 ### Capabilities RPC
+
 ```sh
 ```
 
