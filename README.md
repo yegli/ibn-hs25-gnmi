@@ -37,11 +37,30 @@ The encoding for gNMI is outlined in the RFC-7951 on JSON Encoding of Data Model
 
 ### Get RPC
 To retrieve data from a device using the GetRequest method we work with the paths specified by the YANG Model. In the provided example we retrieve the oper-state which can be of value `0`or `1` for all interfaces as shown by the path `"/interface[name=*]/oper-state"` Also as we have learnt in the previous section the econding can be of a multitude of types not only limited to json but also to protobuf etc. The GetRequest using the GET RPC will return a GetResponse. (https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto#L57)
+
 ```sh
-gnmic get --skip-verify --username admin --password NokiaSrl1! 3 --address leaf01 --path "/interface[name=*]/oper-state" 4 --encoding json_ietf
+gnmic get --skip-verify --username admin --password NokiaSrl1! 3 --address leaf01 \
+--path "/interface[name=*]/oper-state" 4 --encoding json_ietf
 ```
+
 ### Set RPC
+To __set / override / remove__ a value for an attribute such as the description of an Interface the Set RPC can be used. This RPC sends a SetRequest containing upto 3 lists containing paths and attributes to either be updated, replaced or deleted. Once the device receives this call it will validate the provided credentials, paths and schema. From there on atomic transactions are derived for each individual attribute. Once commited a corresponding SetResponse is returned to the Client listing all acknowledged paths.
+
+As an example a set __--update__ request makes use of the YANG model to define which interface in this case __e1-1__ should have its __description__ overwritten with the newly provided value "Interface to Server01".
 ```sh
+gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
+set --update /interfaces/interface[name=e1-1]/config/description:::string:::Interface to Server01
+```
+Alternatively the __--replace__ request overwrites the entire subtree at the specified path. Once everything under said path is removed the new __description__ for interface __e1-1__ is inserted.
+```sh
+gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
+set --replace /interfaces/interface[name=e1-1]/config/description:::string:::Interface to Server01
+```
+
+And lastly the __--delete__ request allowing the removal of the entire subtree specfied by the provided path. As shown in this example the __description__ for interface __e1-1__ is completely removed.
+```sh
+gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
+set --delete /interfaces/interface[name=e1-1]/config/description
 ```
 
 ### Capabilities RPC
@@ -52,6 +71,3 @@ gnmic get --skip-verify --username admin --password NokiaSrl1! 3 --address leaf0
 ```sh
 ```
 
-### Error Messages​
-```sh
-```
