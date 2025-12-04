@@ -140,11 +140,28 @@ set --delete /interface[name=ethernet-1/1]/description
 > Note that any leaf with a value of `config false;` in the YANG model doesn't allow any Set Operations. This includes things such as interface counters, oper state or MAC learned entries. Also certain values such as list keys are only writable once as outlined in [RFC-7950](https://datatracker.ietf.org/doc/html/rfc7950).
 
 ### Capabilities RPC
-
+To retrieve both supported __YANG/OpenConfig__ models and __encodings__ from a device the capabilities rpc is used. This rpc allows the specification of a devices address in this case __leaf01__ and returns a list containing the __gNMI version__, __supported models__ and __supported encodings__.
 ```sh
+gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
+capabilities --address leaf01 --username admin --password NokiaSrl1! --skip-verify
+```
+```sh
+gNMI version: 0.10.0
+supported models:
+  - urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring:ietf-netconf-monitoring, IETF NETCONF (Network Configuration) Working Group, 2010-10-04
+  - urn:ietf:params:xml:ns:yang:ietf-yang-library:ietf-yang-library, IETF NETCONF (Network Configuration) Working Group, 2019-01-04
+  ...
+supported encodings:
+  - JSON_IETF
+  - PROTO
+  - ASCII
+  ...
 ```
 
 ### Subscribe RPC
+The subscribe RPC allows gNMI to subscribe to specified paths on a specific device. One of the major advantages in this case over existing protocols such as SNMP is that now the gNMI collector doesn't constantly have to request the metrics but can instead subscribe to a specified path and then receives updates in the specified __--stream-interval__.
 ```sh
+gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \ 
+subscribe --path /interface[name=ethernet-1/1]/state/counters --stream-mode stream --mode sample --sample-interval 5s
 ```
 
