@@ -1,5 +1,5 @@
 # IBN gNMI Project
-As part of the Intent Based Networking Class of Autumn 25, this repository outlines the steps and code run to get the gNMI lab running on containerlab going. This lab was part of a group project / presentation which contributed to the final grade of this module. This repository will guide you through how to get the lab setup and how to get a better understanding for the ins and outs of gNMI including its configuration. This lab mainly works with the implementation of gNMIc.
+As part of the Intent Based Networking Class of Autumn 25, this repository outlines the steps and code run to get the gNMI lab running on containerlab going. This lab was part of a group project / presentation which contributed to the final grade of this module. This repository will guide you through how to get the lab setup and how to get a better understanding for the ins and outs of gNMI including its configuration. We recommend using light mode in github so it is easier to read the graphical illustrations. This lab mainly works with the implementation of gNMIc.
 
 ## Getting Started
 To run this lab a few prerequisits must be met by the host.
