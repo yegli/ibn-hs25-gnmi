@@ -79,7 +79,7 @@ gnmic get --skip-verify --username admin --password NokiaSrl1! 3 --address leaf0
 ]
 ```
 The following diagram illustrates how a client issues a `Get` RPC to a gNMI-enabled device and how the device processes the request internally:
-![Procedure of get RPC](gNMI_Get.png)
+![Graphical illustration of a get RPC](gNMI_Get.png)
 
 ### Set RPC
 To __set / override / remove__ a value for an attribute such as the description of an Interface the Set RPC can be used. This RPC sends a SetRequest containing upto 3 lists containing paths and attributes to either be updated, replaced or deleted. Once the device receives this call it will validate the provided credentials, paths and schema. From there on atomic transactions are derived for each individual attribute. Once commited a corresponding SetResponse is returned to the Client listing all acknowledged paths.
