@@ -93,7 +93,8 @@ The following diagram illustrates how a client issues a `set` RPC to a gNMI-enab
 As an example a set __--update__ request makes use of the YANG model to define which interface in this case __e1-49__ should have its __description__ overwritten with the newly provided value "to spine01 eth-1/1 with update".
 ```sh
 gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
-set --update-path "/interface[name=ethernet-1/49]/description" --update-value "to spine01 eth-1/1 with update"
+set --update-path "/interface[name=ethernet-1/49]/description" \ 
+    --update-value "to spine01 eth-1/1 with update"
 ```
 ```sh
 {
