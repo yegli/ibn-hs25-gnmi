@@ -111,13 +111,14 @@ set --update-path "/interface[name=ethernet-1/49]/description" \
 ```
 
 The following diagram illustrates how a client issues a `set --update` RPC to leaf01 and how the device processes the request internally:
-![Graphical illustration of a set -- update RPC ](gNMI_Set_Update.png)
+![Graphical illustration of a set --update RPC](gNMI_Set_Update.png)
 
 #### Replace
-Alternatively the __--replace__ request overwrites the entire subtree at the specified path. Once everything under said path is removed the new __description__ for interface __e1-1__ is inserted.
+Alternatively the __--replace__ request overwrites the entire subtree at the specified path. Once everything under said path is removed the new __description__ for interface __e1-49__ is inserted.
 ```sh
 gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 set \
---replace /interface[name=ethernet-1/1]/description:::string:::Interface to Server01
+--replace-path "/interface[name=ethernet-1/49]" 
+--replace-value '{"description": "to spine01 eth-1/1 with replace"}’ 
 ```
 ```sh
 {
@@ -127,11 +128,14 @@ gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 set 
   "results": [
     {
       "operation": "REPLACE",
-      "path": "interface[name=ethernet-1/1]/description"
+      "path": "interface[name=ethernet-1/49]/description"
     }
   ]
 }
 ```
+
+The following diagram illustrates how a client issues a `set --replace` RPC to leaf01 and how the device processes the request internally:
+![Graphical illustration of a set --replace RPC](gNMI_Set_Replace.png)
 
 #### Delete
 And lastly the __--delete__ request allowing the removal of the entire subtree specfied by the provided path. As shown in this example the __description__ for interface __e1-1__ is completely removed.
