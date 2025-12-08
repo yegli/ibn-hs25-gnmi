@@ -138,10 +138,10 @@ The following diagram illustrates how a client issues a `set --replace` RPC to l
 ![Graphical illustration of a set --replace RPC](gNMI_Set_Replace.png)
 
 #### Delete
-And lastly the __--delete__ request allowing the removal of the entire subtree specfied by the provided path. As shown in this example the __description__ for interface __e1-1__ is completely removed.
+And lastly the __--delete__ request allowing the removal of the entire subtree specfied by the provided path. As shown in this example the __description__ for interface __e1-49__ is completely removed.
 ```sh
 gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
-set --delete /interface[name=ethernet-1/1]/description
+set --delete /interface[name=ethernet-1/49]/description
 ```
 ```sh
 {
@@ -151,18 +151,21 @@ set --delete /interface[name=ethernet-1/1]/description
   "results": [
     {
       "operation": "DELETE",
-      "path": "interface[name=ethernet-1/1]/description"
+      "path": "interface[name=ethernet-1/49]/description"
     }
   ]
 }
 ```
+
+The following diagram illustrates how a client issues a `set --delete` RPC to leaf01 and how the device processes the request internally:
+![Graphical illustration of a set --delete RPC](gNMI_Set_Delete.png)
+
 > Note that any leaf with a value of `config false;` in the YANG model doesn't allow any Set Operations. This includes things such as interface counters, oper state or MAC learned entries. Also certain values such as list keys are only writable once as outlined in [RFC-7950](https://datatracker.ietf.org/doc/html/rfc7950).
 
 ### Capabilities RPC
 To retrieve both supported __YANG/OpenConfig__ models and __encodings__ from a device the capabilities rpc is used. This rpc allows the specification of a devices address in this case __leaf01__ and returns a list containing the __gNMI version__, __supported models__ and __supported encodings__.
 ```sh
-gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
-capabilities --address leaf01 --username admin --password NokiaSrl1! --skip-verify
+gnmic capabilities --skip-verify --username admin --password NokiaSrl1! --address leaf01 
 ```
 ```sh
 gNMI version: 0.10.0
