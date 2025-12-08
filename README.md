@@ -36,7 +36,7 @@ In this lab we work with gNMIc implementation of the gNMI protocol. Most if not 
 The encoding for gNMI is outlined in the RFC-7951 on JSON Encoding of Data Modeled with YANG. [RFC-7951](https://datatracker.ietf.org/doc/html/rfc7951). This RFC defines the Tree and Leaf structure used to model data in json format and how to map this json format to the paths used in the YANG model.
 
 ### Get RPC
-To retrieve data from a device using the GetRequest method we work with the paths specified by the YANG Model. In the provided example we retrieve the oper-state which can be of value `0`or `1` for all interfaces as shown by the path `"/interface[name=*]/oper-state"` Also as we have learnt in the previous section the econding can be of a multitude of types not only limited to json but also to protobuf etc. The GetRequest using the GET RPC will return a GetResponse: [docs](https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto#L57)
+To retrieve data from a device using the GetRequest method we work with the paths specified by the YANG Model. In the provided example we retrieve the oper-state which can be of value `down`or `up` for all interfaces as shown by the path `"/interface[name=*]/oper-state"` Also as we have learnt in the previous section the econding can be of a multitude of types not only limited to json but also to protobuf etc. The GetRequest using the GET RPC will return a GetResponse: [docs](https://github.com/openconfig/gnmi/blob/master/proto/gnmi/gnmi.proto#L57)
 
 ```sh
 gnmic get --skip-verify --username admin --password NokiaSrl1! 3 --address leaf01 \
@@ -78,6 +78,8 @@ gnmic get --skip-verify --username admin --password NokiaSrl1! 3 --address leaf0
   }
 ]
 ```
+The following diagram illustrates how a client issues a `Get` RPC to a gNMI-enabled device and how the device processes the request internally:
+![Procedure of get RPC](gNMI_Get.png)
 
 ### Set RPC
 To __set / override / remove__ a value for an attribute such as the description of an Interface the Set RPC can be used. This RPC sends a SetRequest containing upto 3 lists containing paths and attributes to either be updated, replaced or deleted. Once the device receives this call it will validate the provided credentials, paths and schema. From there on atomic transactions are derived for each individual attribute. Once commited a corresponding SetResponse is returned to the Client listing all acknowledged paths.
