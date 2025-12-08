@@ -79,17 +79,21 @@ gnmic get --skip-verify --username admin --password NokiaSrl1! 3 --address leaf0
 ]
 ```
 The following diagram illustrates how a client issues a `get` RPC to a gNMI-enabled device and how the device processes the request internally:
+
 ![Graphical illustration of a get RPC](gNMI_Get.png)
 
 ### Set RPC
 To __set / override / remove__ a value for an attribute such as the description of an Interface the Set RPC can be used. This RPC sends a SetRequest containing upto 3 lists containing paths and attributes to either be updated, replaced or deleted. Once the device receives this call it will validate the provided credentials, paths and schema. From there on atomic transactions are derived for each individual attribute. Once commited a corresponding SetResponse is returned to the Client listing all acknowledged paths.
+
 The following diagram illustrates how a client issues a `set` RPC to a gNMI-enabled device and how the device processes the request internally:
+
 ![Graphical illustration of a set RPC](gNMI_Set.png)
 
-As an example a set __--update__ request makes use of the YANG model to define which interface in this case __e1-1__ should have its __description__ overwritten with the newly provided value "Interface to Server01".
+#### Update
+As an example a set __--update__ request makes use of the YANG model to define which interface in this case __e1-49__ should have its __description__ overwritten with the newly provided value "to spine01 eth-1/1 with update".
 ```sh
 gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
-set --update /interface[name=ethernet-1/1]/description:::string:::Interface to Server01
+set --update-path "/interface[name=ethernet-1/49]/description" --update-value "to spine01 eth-1/1 with update"
 ```
 ```sh
 {
@@ -99,11 +103,16 @@ set --update /interface[name=ethernet-1/1]/description:::string:::Interface to S
   "results": [
     {
       "operation": "UPDATE",
-      "path": "interface[name=ethernet-1/1]/description"
+      "path": "interface[name=ethernet-1/49]/description"
     }
   ]
 }
 ```
+
+The following diagram illustrates how a client issues a `set --update` RPC to leaf01 and how the device processes the request internally:
+![Graphical illustration of a set -- update RPC ](gNMI_Set_Update.png)
+
+#### Replace
 Alternatively the __--replace__ request overwrites the entire subtree at the specified path. Once everything under said path is removed the new __description__ for interface __e1-1__ is inserted.
 ```sh
 gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 set \
@@ -123,6 +132,7 @@ gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 set 
 }
 ```
 
+#### Delete
 And lastly the __--delete__ request allowing the removal of the entire subtree specfied by the provided path. As shown in this example the __description__ for interface __e1-1__ is completely removed.
 ```sh
 gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
