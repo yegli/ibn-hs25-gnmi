@@ -253,3 +253,4 @@ In those .proto files is a blueprint how to decode the protobuff to a human-read
 Edit > Preferences > Protcols > ProtoBuf > ProtoBuf search paths
 
 Now we can see the decoded gnmi traffic.
+![gNMI traffic in Wireshark](wireshark.png)
