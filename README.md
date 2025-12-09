@@ -165,3 +165,67 @@ gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
 subscribe --path /interface[name=ethernet-1/1]/state/counters --stream-mode stream --mode sample --sample-interval 5s
 ```
 
+
+## Inspect gRPC traffic with Wireshark
+
+To sniff the traffic in our container lab a few things have to be set up before. First we have to define where we want to capture traffic. Since the traffic is encrypted by default we need a way to decypt the traffic. Last but not least we need to know how to interpret the gRPC packets since they are encoded with protobuf.
+
+### Where and how to sniff networktraffic in containerlab
+
+There are many different places where we could analyze the traffic. In our lab all the gNMI traffic is sent from the host to the containers over the management network. In this case we can access the traffic directly on the host's bridge. For This we use this command on our device. It will connect to the host of the containerlab and send the packets captured with tcpdump to wireshark on our client.
+
+```sh
+ssh <user>@<host ip>     "sudo tcpdump -U -nni <bridge name> -w -" | wireshark -k -i -
+```
+```
+
+```sh
+ssh <user>@<host ip> #create ssh section
+sudo tcpdump #run tcpdump
+-U #--packet-buffered don't buffer
+-nn #don't resolve hostnames
+-i <bridge name> #capture from specific interface
+-w - #print output to stdout
+| #pipe output to wireshark
+wireshark #run wireshark on client
+-k #start capture automatically
+-i - #read packets from stdin
+```
+
+Further information: [https://containerlab.dev/manual/wireshark/#](https://containerlab.dev/manual/wireshark/#)
+
+### Decrypt TLS traffic
+
+To decrypt the traffic we can use the following argument on our gNMIc command:
+
+```sh
+--log-tls-secret
+```
+or in the yaml config:
+```yaml
+targets:
+  leaf01:
+    log-tls-secret: true
+    username: admin
+    password: NokiaSrl1!
+    skip-verify: true
+    subscription:
+      - interfaces
+```
+This will create a log in the current directory which outputs the session keys of tls. This key only works for the current session. Now we can copy the key file to our client and add it to Wireshark.
+
+Edit > Preferences > Protocols > TLS > (Pre)-Master-Secret log filename
+
+Since each container creates their own session key in different files, all keys have to be written in one file and then added in Wireshark.
+Now Wireshark can encypt the traffic from this session and the plain HTTP/2 traffic should be visible.
+
+Further information: [https://gnmic.openconfig.net/user_guide/targets/targets_session_sec/](https://gnmic.openconfig.net/user_guide/targets/targets_session_sec/)
+
+### Decode protoBuf
+
+Now we can see the plain HTML. but the gNMI packets are still encode with ProtoBuf. To be able to dissect ProtoBuf we need to tell Wireshark how. For that we add .proto files to Wireshark.
+In those .proto files is a blueprint how to decode the protobuff to a human-readable format. The files can be downloaded from this repository and added to Wireshark.
+
+Edit > Preferences > Protcols > ProtoBuf > ProtoBuf search paths
+
+Now we can see the decoded gnmi traffic.
