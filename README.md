@@ -201,7 +201,6 @@ There are many different places where we could analyze the traffic. In our lab a
 ```sh
 ssh <user>@<host ip>     "sudo tcpdump -U -nni <bridge name> -w -" | wireshark -k -i -
 ```
-```
 
 ```sh
 ssh <user>@<host ip> #create ssh section
