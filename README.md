@@ -82,14 +82,14 @@ gnmic get --skip-verify --username admin --password NokiaSrl1! 3 --address leaf0
 ```
 The following diagram illustrates how a client issues a `get` RPC to a gNMI-enabled device and how the device processes the request internally:
 
-![Graphical illustration of a get RPC](gNMI_Get.png)
+![Graphical illustration of a get RPC](diagrams/gNMI_Get_RPC.png)
 
 ### Set RPC
 To __set / override / remove__ a value for an attribute such as the description of an Interface the Set RPC can be used. This RPC sends a SetRequest containing upto 3 lists containing paths and attributes to either be updated, replaced or deleted. Once the device receives this call it will validate the provided credentials, paths and schema. From there on atomic transactions are derived for each individual attribute. Once commited a corresponding SetResponse is returned to the Client listing all acknowledged paths.
 
 The following diagram illustrates how a client issues a `set` RPC to a gNMI-enabled device and how the device processes the request internally:
 
-![Graphical illustration of a set RPC](gNMI_Set.png)
+![Graphical illustration of a set RPC](diagrams/gNMI_Set_RPC.png)
 
 #### Update
 As an example a set __--update__ request makes use of the YANG model to define which interface in this case __e1-49__ should have its __description__ overwritten with the newly provided value "to spine01 eth-1/1 with update".
@@ -113,7 +113,7 @@ set --update-path "/interface[name=ethernet-1/49]/description" \
 ```
 
 The following diagram illustrates how a client issues a `set --update` RPC to leaf01 and how the device processes the request internally:
-![Graphical illustration of a set --update RPC](gNMI_Set_Update.png)
+![Graphical illustration of a set --update RPC](diagrams/gNMI_Set_Update_RPC.png)
 
 #### Replace
 Alternatively the __--replace__ request overwrites the entire subtree at the specified path. Once everything under said path is removed the new __description__ for interface __e1-49__ is inserted.
@@ -136,7 +136,7 @@ gnmic set --skip-verify --username admin --password NokiaSrl1! --address leaf01 
 ```
 
 The following diagram illustrates how a client issues a `set --replace` RPC to leaf01 and how the device processes the request internally:
-![Graphical illustration of a set --replace RPC](gNMI_Set_Replace.png)
+![Graphical illustration of a set --replace RPC](diagrams/gNMI_Set_Replace_RPC.png)
 
 #### Delete
 And lastly the __--delete__ request allowing the removal of the entire subtree specfied by the provided path. As shown in this example the __description__ for interface __e1-49__ is completely removed.
@@ -159,7 +159,7 @@ set --delete /interface[name=ethernet-1/49]/description
 ```
 
 The following diagram illustrates how a client issues a `set --delete` RPC to leaf01 and how the device processes the request internally:
-![Graphical illustration of a set --delete RPC](gNMI_Set_Delete.png)
+![Graphical illustration of a set --delete RPC](diagrams/gNMI_Set_Delete_RPC.png)
 
 > Note that any leaf with a value of `config false;` in the YANG model doesn't allow any Set Operations. This includes things such as interface counters, oper state or MAC learned entries. Also certain values such as list keys are only writable once as outlined in [RFC-7950](https://datatracker.ietf.org/doc/html/rfc7950).
 
@@ -251,4 +251,4 @@ In those .proto files is a blueprint how to decode the protobuff to a human-read
 Edit > Preferences > Protcols > ProtoBuf > ProtoBuf search paths
 
 Now we can see the decoded gnmi traffic.
-![gNMI traffic in Wireshark](wireshark.png)
+![gNMI traffic in Wireshark](img/wireshark.png)
