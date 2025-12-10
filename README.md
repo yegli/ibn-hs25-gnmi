@@ -1,4 +1,4 @@
-# IBN gNMI Project
+ # IBN gNMI Project
 As part of the Intent Based Networking Class of Autumn 25, this repository outlines the steps and code run to get the gNMI lab running on containerlab going. This lab was part of a group project / presentation which contributed to the final grade of this module. This repository will guide you through how to get the lab setup and how to get a better understanding for the ins and outs of gNMI including its configuration. This lab mainly works with the implementation of gNMIc.
 
 > We recommend using light mode in github so it is easier to read the graphical illustrations.
@@ -118,19 +118,18 @@ The following diagram illustrates how a client issues a `set --update` RPC to le
 #### Replace
 Alternatively the __--replace__ request overwrites the entire subtree at the specified path. Once everything under said path is removed the new __description__ for interface __e1-49__ is inserted.
 ```sh
-gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 set \
---replace-path "/interface[name=ethernet-1/49]" 
---replace-value '{"description": "to spine01 eth-1/1 with replace"}’ 
+gnmic set --skip-verify --username admin --password NokiaSrl1! --address leaf01 --replace-path "/interface[name=ethernet-1/49]" \
+--replace-value '{"name": "ethernet-1/49", "description": "to spine01 eth-1/1 with replace", "subinterface": [{"index": 0}] }'
 ```
 ```sh
 {
   "source": "leaf01",
-  "timestamp": 1764837288329288930,
-  "time": "2025-12-04T08:34:48.32928893Z",
+  "timestamp": 1765389417998359164,
+  "time": "2025-12-10T17:56:57.998359164Z",
   "results": [
     {
       "operation": "REPLACE",
-      "path": "interface[name=ethernet-1/49]/description"
+      "path": "interface[name=ethernet-1/49]"
     }
   ]
 }
