@@ -96,7 +96,7 @@ As an example a set __--update__ request makes use of the YANG model to define w
 ```sh
 gnmic --skip-verify --username admin --password NokiaSrl1! --address leaf01 \
 set --update-path "/interface[name=ethernet-1/49]/description" \ 
-    --update-value "to spine01 eth-1/1 with update"
+--update-value "to spine01 eth-1/1 with update"
 ```
 ```sh
 {
