@@ -50,6 +50,10 @@ gnmic set --skip-verify --address leaf01 --username admin --password NokiaSrl1! 
 ### 10. Create interface configuration again
 ```sh
 gnmic set --skip-verify --address leaf01 --username admin --password NokiaSrl1! \
+--update-path "/interface[name=ethernet-1/49]/description" \
+--update-value "to spine01 eth-1/1 works again" \
+--update-path "/interface[name=ethernet-1/49]/admin-state" \
+--update-value "enable" \
 --update-path "/interface[name=ethernet-1/49]/subinterface[index=0]/admin-state" \
 --update-value "enable" \
 --update-path "/interface[name=ethernet-1/49]/subinterface[index=0]/ip-mtu" \
@@ -57,7 +61,11 @@ gnmic set --skip-verify --address leaf01 --username admin --password NokiaSrl1! 
 --update-path "/interface[name=ethernet-1/49]/subinterface[index=0]/ipv4/admin-state" \
 --update-value "enable" \
 --update-path "/interface[name=ethernet-1/49]/subinterface[index=0]/ipv4/address[ip-prefix=192.168.11.1/31]" \
---update-value "{}"
+--update-value "{}" \
+--update-path "/network-instance[name=default]/interface[name=ethernet-1/49.0]/interface-ref/interface" \
+--update-value "ethernet-1/49" \
+--update-path "/network-instance[name=default]/interface[name=ethernet-1/49.0]/interface-ref/subinterface" \
+--update-value "0"
 ```
 
 ### 11. Show capabilities
